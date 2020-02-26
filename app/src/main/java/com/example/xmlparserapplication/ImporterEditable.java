@@ -37,13 +37,13 @@ class ImporterEditable {
     private Editable result;
     private static final float defaultSize = 12.0F;
 
-    public ImporterEditable(Context context, String docxFilePath) {
+    ImporterEditable(Context context, String docxFilePath) {
         this.context = context;
         this.docxFilePath = docxFilePath;
         result = null;
     }
 
-    public Editable importEditable() {
+    Editable importEditable() {
         result = new SpannableStringBuilder("");
         processDocumentXmlFile(new File(docxFilePath));
         return result;
@@ -64,12 +64,6 @@ class ImporterEditable {
                         if (element.getTagName().equalsIgnoreCase("w:p")) {
                             // process paragraph
                             processParagraph(element);
-                        } else if (element.getTagName().equalsIgnoreCase("w:sectPr")) {
-                            // section properties element, just skip it to not bother user
-                            // with unsupported content message.
-                        } else {
-                            // ignore other type of tags
-//                            containsUnsupportedContent = true;
                         }
                     }
                 }
@@ -157,13 +151,6 @@ class ImporterEditable {
                 Element element = (Element) paragraphNodes.item(i);
                 if (element.getTagName().equalsIgnoreCase("w:r")) {
                     processTextRun(element);
-                } else if (element.getTagName().equalsIgnoreCase("w:proofErr")) {
-                    // Word proofing error section, skip it
-                } else if (element.getTagName().equalsIgnoreCase("w:bookmarkStart") || element.getTagName().equalsIgnoreCase("w:bookmarkEnd")) {
-                    // Bookmarks, skip it
-                } else {
-                    // ignore other type of tags
-//                    containsUnsupportedContent = true;
                 }
             }
         }
@@ -182,7 +169,7 @@ class ImporterEditable {
                 } else if (element.getTagName().equalsIgnoreCase("w:t")) {
                     processTextElement(element, textRunStyle);
                 } else if (element.getTagName().equalsIgnoreCase("w:drawing")) {
-                    processDrawing(element);
+//                    processDrawing(element);
                 } else {
                     // ignore other type of tags
 //                    containsUnsupportedContent = true;
@@ -191,28 +178,6 @@ class ImporterEditable {
         }
     }
 
-    private void processDrawing(Element drawingElement) {
-        NodeList aBlipNodes = drawingElement.getElementsByTagName("a:blip");
-        if (aBlipNodes.getLength() > 0) {
-            for (int i = 0; i < aBlipNodes.getLength(); ++i) {
-                if (aBlipNodes.item(i) instanceof Element) {
-//                    String relationshipId = ((Element) aBlipNodes.item(i)).getAttribute("r:embed");
-//                    RelationshipInfo info = relationships.get(relationshipId);
-//                    String imagePath = unzippedDocxDir.getPath() + File.separator + "word" + File.separator + info.getTarget();
-//                    Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
-//                    String pictureUri = DocumentUtils.addDocumentMedia(context, bitmap);
-//                    Drawable drawable = new BitmapDrawable(context.getResources(), bitmap);
-//                    int width = drawable.getIntrinsicWidth();
-//                    int height = drawable.getIntrinsicHeight();
-//                    drawable.setBounds(0, 0, width > 0 ? width : 0, height > 0 ? height : 0);
-//                    ImageSpan imageSpan = new ImageSpan(drawable, pictureUri, RtfDocument.imageAlignment);
-//                    SpannableString str = new SpannableString(RtfDocument.imageSpanString);
-//                    str.setSpan(imageSpan, 0, RtfDocument.imageSpanString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//                    result.append(str);
-                }
-            }
-        }
-    }
 
     private void processTextElement(Element textElement, ArrayList<CharacterStyle> textRunStyle) {
         SpannableString text = new SpannableString(textElement.getTextContent());
